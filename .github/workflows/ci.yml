@@ -43,11 +43,11 @@ jobs:
       # 5. Update IMAGE_TAG environment variable in Dokploy
       - name: Update IMAGE_TAG in Dokploy
         run: |
-          HTTP_CODE=$(curl -s -o /tmp/response.txt -w "%{http_code}" -X POST "${{ secrets.DOKPLOY_URL }}/api/application.saveEnvironment" \
+          HTTP_CODE=$(curl -s -o /tmp/response.txt -w "%{http_code}" -X POST "${{ secrets.DOKPLOY_URL }}/api/compose.update" \
             -H "x-api-key: ${{ secrets.DOKPLOY_API_KEY }}" \
             -H "Content-Type: application/json" \
             -d '{
-              "applicationId": "${{ secrets.DOKPLOY_APP_ID }}",
+              "composeId": "${{ secrets.DOKPLOY_COMPOSE_ID }}",
               "env": "IMAGE_TAG=${{ github.sha }}"
             }')
           echo "HTTP Status: $HTTP_CODE"
@@ -58,10 +58,10 @@ jobs:
       # 6. Trigger Dokploy to deploy with the new image
       - name: Trigger Dokploy Deploy
         run: |
-          HTTP_CODE=$(curl -s -o /tmp/response.txt -w "%{http_code}" -X POST "${{ secrets.DOKPLOY_URL }}/api/application.deploy" \
+          HTTP_CODE=$(curl -s -o /tmp/response.txt -w "%{http_code}" -X POST "${{ secrets.DOKPLOY_URL }}/api/compose.deploy" \
             -H "x-api-key: ${{ secrets.DOKPLOY_API_KEY }}" \
             -H "Content-Type: application/json" \
-            -d '{"applicationId": "${{ secrets.DOKPLOY_APP_ID }}"}')
+            -d '{"composeId": "${{ secrets.DOKPLOY_COMPOSE_ID }}"}')
           echo "HTTP Status: $HTTP_CODE"
           cat /tmp/response.txt
           echo ""
